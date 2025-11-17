@@ -51,6 +51,7 @@ async function main() {
     where: { email: 'admin@realestate-marketplace.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'admin@realestate-marketplace.com',
       name: 'Admin User',
       password: hashedPassword,
@@ -58,6 +59,7 @@ async function main() {
       tenantId: tenant1.id,
       kycStatus: KYCStatus.APPROVED,
       emailVerified: new Date(),
+      updatedAt: new Date(),
     },
   });
 
@@ -65,6 +67,7 @@ async function main() {
     where: { email: 'organizer@realestate-marketplace.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'organizer@realestate-marketplace.com',
       name: 'Group Organizer',
       password: hashedPassword,
@@ -72,6 +75,7 @@ async function main() {
       tenantId: tenant1.id,
       kycStatus: KYCStatus.APPROVED,
       emailVerified: new Date(),
+      updatedAt: new Date(),
     },
   });
 
@@ -79,6 +83,7 @@ async function main() {
     where: { email: 'buyer1@example.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'buyer1@example.com',
       name: 'Amit Kumar',
       password: hashedPassword,
@@ -86,6 +91,7 @@ async function main() {
       tenantId: tenant1.id,
       kycStatus: KYCStatus.APPROVED,
       emailVerified: new Date(),
+      updatedAt: new Date(),
     },
   });
 
@@ -93,6 +99,7 @@ async function main() {
     where: { email: 'buyer2@example.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'buyer2@example.com',
       name: 'Priya Sharma',
       password: hashedPassword,
@@ -100,6 +107,7 @@ async function main() {
       tenantId: tenant1.id,
       kycStatus: KYCStatus.IN_PROGRESS,
       emailVerified: new Date(),
+      updatedAt: new Date(),
     },
   });
 
@@ -107,6 +115,7 @@ async function main() {
     where: { email: 'admin@property-partners.com' },
     update: {},
     create: {
+      id: randomUUID(),
       email: 'admin@property-partners.com',
       name: 'Partner Admin',
       password: hashedPassword,
@@ -114,6 +123,7 @@ async function main() {
       tenantId: tenant2.id,
       kycStatus: KYCStatus.APPROVED,
       emailVerified: new Date(),
+      updatedAt: new Date(),
     },
   });
 
@@ -122,6 +132,7 @@ async function main() {
   // Create Projects for Tenant 1
   const project1 = await prisma.projects.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       name: 'Skyline Towers',
       slug: 'skyline-towers-mumbai',
@@ -149,11 +160,13 @@ async function main() {
       status: ProjectStatus.ACTIVE,
       featured: true,
       launchDate: new Date('2024-01-15'),
+      updatedAt: new Date(),
     },
   });
 
   const project2 = await prisma.projects.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       name: 'Green Valley Villas',
       slug: 'green-valley-villas-bangalore',
@@ -181,11 +194,13 @@ async function main() {
       status: ProjectStatus.FAST_SELLING,
       featured: true,
       launchDate: new Date('2023-08-01'),
+      updatedAt: new Date(),
     },
   });
 
   const project3 = await prisma.projects.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       name: 'Urban Edge Apartments',
       slug: 'urban-edge-apartments-pune',
@@ -213,11 +228,13 @@ async function main() {
       status: ProjectStatus.ACTIVE,
       featured: false,
       launchDate: new Date('2024-03-01'),
+      updatedAt: new Date(),
     },
   });
 
   const project4 = await prisma.projects.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant2.id,
       name: 'Seaside Residency',
       slug: 'seaside-residency-goa',
@@ -245,6 +262,7 @@ async function main() {
       status: ProjectStatus.PRE_LAUNCH,
       featured: true,
       launchDate: new Date('2024-12-01'),
+      updatedAt: new Date(),
     },
   });
 
@@ -271,6 +289,7 @@ async function main() {
   // Create Groups
   const group1 = await prisma.groups.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       projectId: project1.id,
       name: 'Skyline Early Birds',
@@ -282,11 +301,13 @@ async function main() {
       commitmentAmount: 100000,
       deadline: new Date('2025-02-28'),
       createdById: organizer1.id,
+      updatedAt: new Date(),
     },
   });
 
   const group2 = await prisma.groups.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       projectId: project2.id,
       name: 'Green Valley Families',
@@ -299,11 +320,13 @@ async function main() {
       deadline: new Date('2025-01-31'),
       negotiationStart: new Date('2024-11-01'),
       createdById: organizer1.id,
+      updatedAt: new Date(),
     },
   });
 
   const group3 = await prisma.groups.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant1.id,
       projectId: project3.id,
       name: 'Urban Professionals',
@@ -314,11 +337,13 @@ async function main() {
       commitmentAmount: 25000,
       deadline: new Date('2025-03-15'),
       createdById: organizer1.id,
+      updatedAt: new Date(),
     },
   });
 
   const group4 = await prisma.groups.create({
     data: {
+      id: randomUUID(),
       tenantId: tenant2.id,
       projectId: project4.id,
       name: 'Seaside Dreamers',
@@ -329,6 +354,7 @@ async function main() {
       commitmentAmount: 200000,
       deadline: new Date('2025-04-30'),
       createdById: admin2.id,
+      updatedAt: new Date(),
     },
   });
 
