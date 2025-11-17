@@ -1,65 +1,106 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { prisma } from '@/lib/prisma';
+import { ProjectCard } from '@/components/ProjectCard';
+import { Hero } from '@/components/Hero';
+import { Features } from '@/components/Features';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
-export default function Home() {
+export const revalidate = 3600; // Revalidate every hour
+
+async function getFeaturedProjects() {
+  return await prisma.project.findMany({
+    where: {
+      isActive: true,
+      featured: true,
+    },
+    take: 6,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { groups: true },
+      },
+    },
+  });
+}
+
+async function getStats() {
+  const [projectCount, activeGroupsCount, totalSavings] = await Promise.all([
+    prisma.project.count({ where: { isActive: true } }),
+    prisma.group.count({ where: { status: { in: ['OPEN', 'NEGOTIATING'] } } }),
+    prisma.transaction.aggregate({
+      where: { status: 'COMPLETED' },
+      _sum: { amount: true },
+    }),
+  ]);
+
+  return {
+    projects: projectCount,
+    activeGroups: activeGroupsCount,
+    totalSavings: totalSavings._sum.amount || 0,
+  };
+}
+
+export default async function HomePage() {
+  const [featuredProjects, stats] = await Promise.all([
+    getFeaturedProjects(),
+    getStats(),
+  ]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-white">
+      <Header />
+      <Hero stats={stats} />
+      
+      {/* Featured Projects */}
+      <section className="py-16 px-4 max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-3xl font-bold text-gray-900">Featured Projects</h2>
+            <p className="text-gray-600 mt-2">Explore our top real estate opportunities</p>
+          </div>
+          <Link 
+            href="/projects" 
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            View All →
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      </section>
+
+      <Features />
+      
+      {/* CTA Section */}
+      <section className="bg-blue-600 py-16 px-4">
+        <div className="max-w-4xl mx-auto text-center text-white">
+          <h2 className="text-3xl font-bold mb-4">Ready to Save on Your Dream Property?</h2>
+          <p className="text-xl mb-8 text-blue-100">
+            Join thousands of buyers who have already saved crores through group buying
           </p>
+          <div className="flex gap-4 justify-center">
+            <Link 
+              href="/projects" 
+              className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition"
+            >
+              Browse Projects
+            </Link>
+            <Link 
+              href="/how-it-works" 
+              className="bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-800 transition border border-blue-500"
+            >
+              Learn More
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </section>
+
+      <Footer />
     </div>
   );
 }
