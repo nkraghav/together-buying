@@ -4,11 +4,12 @@ import { auth } from '@/lib/auth';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const group = await prisma.group.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         project: true,
         createdBy: {
@@ -56,7 +57,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -65,8 +66,9 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
     const group = await prisma.group.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!group) {
@@ -86,7 +88,7 @@ export async function PATCH(
     const data = await request.json();
 
     const updatedGroup = await prisma.group.update({
-      where: { id: params.id },
+      where: { id },
       data,
     });
 

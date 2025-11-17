@@ -5,7 +5,7 @@ import { CommitmentStatus } from '@prisma/client';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -14,7 +14,7 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     // Check if group exists and is accepting members
     const group = await prisma.group.findUnique({

@@ -59,8 +59,9 @@ async function getGroup(id: string) {
   return group;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const group = await getGroup(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const group = await getGroup(id);
   
   return {
     title: `${group.name} - GroupBuy SaaS`,
@@ -68,9 +69,10 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default async function GroupPage({ params }: { params: { id: string } }) {
+export default async function GroupPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
-  const group = await getGroup(params.id);
+  const { id } = await params;
+  const group = await getGroup(id);
 
   const isMember = session?.user?.id 
     ? group.members.some(m => m.userId === session.user.id)
