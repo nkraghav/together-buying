@@ -269,7 +269,7 @@ async function main() {
   console.log('✅ Projects created');
 
   // Create Inventory Units
-  await prisma.inventoryUnit.createMany({
+  await prisma.inventory_units.createMany({
     data: [
       // Skyline Towers units
       { projectId: project1.id, unitType: '2BHK', floor: 15, carpetArea: 1200, builtUpArea: 1600, price: 15000000, availability: 'AVAILABLE' },
@@ -373,7 +373,7 @@ async function main() {
   console.log('✅ Group members added');
 
   // Create Offers
-  await prisma.offer.createMany({
+  await prisma.offers.createMany({
     data: [
       {
         groupId: group2.id,
@@ -464,7 +464,7 @@ async function main() {
 
   // Create Case Study
   try {
-    await prisma.caseStudy.create({
+    await prisma.case_studies.create({
       data: {
         tenantId: tenant1.id,
         title: 'Mumbai Buyers Save ₹50 Lakhs Through Collective Bargaining',
