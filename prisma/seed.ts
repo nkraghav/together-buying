@@ -1,5 +1,6 @@
 import { PrismaClient, UserRole, ProjectStatus, GroupStatus, KYCStatus } from '@prisma/client';
 import { hash } from 'bcrypt';
+import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -11,6 +12,7 @@ async function main() {
     where: { slug: 'realestate-marketplace' },
     update: {},
     create: {
+      id: randomUUID(),
       name: 'RealEstate Marketplace',
       slug: 'realestate-marketplace',
       plan: 'professional',
@@ -19,6 +21,7 @@ async function main() {
         theme: 'light',
         features: ['groups', 'analytics', 'api_access'],
       },
+      updatedAt: new Date(),
     },
   });
 
@@ -26,6 +29,7 @@ async function main() {
     where: { slug: 'property-partners' },
     update: {},
     create: {
+      id: randomUUID(),
       name: 'Property Partners',
       slug: 'property-partners',
       plan: 'starter',
@@ -34,6 +38,7 @@ async function main() {
         theme: 'light',
         features: ['groups'],
       },
+      updatedAt: new Date(),
     },
   });
 
