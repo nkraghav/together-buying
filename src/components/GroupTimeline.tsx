@@ -1,8 +1,8 @@
 import { formatDate } from '@/lib/utils';
-import type { GroupMilestone } from '@prisma/client';
+import type { group_milestones } from '@prisma/client';
 
 interface GroupTimelineProps {
-  milestones: GroupMilestone[];
+  milestones: group_milestones[];
 }
 
 export function GroupTimeline({ milestones }: GroupTimelineProps) {

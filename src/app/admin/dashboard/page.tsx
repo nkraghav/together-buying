@@ -13,15 +13,15 @@ async function getPlatformStats() {
     platformRevenue,
     recentTenants,
   ] = await Promise.all([
-    prisma.tenant.count({ where: { isActive: true } }),
-    prisma.user.count({ where: { isActive: true } }),
-    prisma.project.count({ where: { isActive: true } }),
-    prisma.group.count(),
-    prisma.transaction.aggregate({
+    prisma.tenants.count({ where: { isActive: true } }),
+    prisma.users.count({ where: { isActive: true } }),
+    prisma.projects.count({ where: { isActive: true } }),
+    prisma.groups.count(),
+    prisma.transactions.aggregate({
       where: { status: 'COMPLETED' },
       _sum: { amount: true },
     }),
-    prisma.tenant.findMany({
+    prisma.tenants.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
       include: {

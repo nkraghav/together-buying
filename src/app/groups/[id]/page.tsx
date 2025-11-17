@@ -10,10 +10,10 @@ import { JoinGroupButton } from '@/components/JoinGroupButton';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 async function getGroup(id: string) {
-  const group = await prisma.group.findUnique({
+  const group = await prisma.groups.findUnique({
     where: { id },
     include: {
-      project: {
+      projects: {
         select: {
           name: true,
           slug: true,
@@ -23,16 +23,16 @@ async function getGroup(id: string) {
           developer: true,
         },
       },
-      createdBy: {
+      users: {
         select: {
           name: true,
           email: true,
           image: true,
         },
       },
-      members: {
+      group_members: {
         include: {
-          user: {
+          users: {
             select: {
               id: true,
               name: true,
@@ -46,7 +46,7 @@ async function getGroup(id: string) {
       offers: {
         orderBy: { createdAt: 'desc' },
       },
-      milestones: {
+      group_milestones: {
         orderBy: { createdAt: 'asc' },
       },
     },
@@ -75,7 +75,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
   const group = await getGroup(id);
 
   const isMember = session?.user?.id 
-    ? group.members.some(m => m.userId === session.user.id)
+    ? group.group_members.some(m => m.userId === session.user.id)
     : false;
 
   const latestOffer = group.offers[0];
@@ -133,14 +133,14 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
             {/* Timeline */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Timeline</h2>
-              <GroupTimeline milestones={group.milestones} />
+              <GroupTimeline milestones={group.group_milestones} />
             </div>
 
             {/* Members */}
             {isMember && (
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Members</h2>
-                <GroupMembers members={group.members} />
+                <GroupMembers members={group.group_members} />
               </div>
             )}
           </div>
@@ -172,7 +172,7 @@ export default async function GroupPage({ params }: { params: Promise<{ id: stri
                 
                 <div>
                   <div className="text-sm text-gray-500">Organizer</div>
-                  <div className="font-medium">{group.createdBy.name}</div>
+                  <div className="font-medium">{group.users.name}</div>
                 </div>
               </div>
             </div>

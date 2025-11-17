@@ -1,14 +1,20 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatCurrency } from '@/lib/utils';
-import type { Project } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 
-interface ProjectCardProps {
-  project: Project & {
-    _count?: {
-      groups: number;
+type ProjectWithCount = Prisma.projectsGetPayload<{
+  include: {
+    _count: {
+      select: {
+        groups: true;
+      };
     };
   };
+}>;
+
+interface ProjectCardProps {
+  project: ProjectWithCount;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {

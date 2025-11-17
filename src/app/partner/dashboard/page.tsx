@@ -13,28 +13,28 @@ async function getPartnerStats(tenantId: string) {
     totalRevenue,
     recentGroups,
   ] = await Promise.all([
-    prisma.project.count({ where: { tenantId, isActive: true } }),
-    prisma.group.count({ where: { tenantId } }),
-    prisma.group.count({ where: { tenantId, status: { in: ['OPEN', 'NEGOTIATING'] } } }),
-    prisma.groupMember.count({
+    prisma.projects.count({ where: { tenantId, isActive: true } }),
+    prisma.groups.count({ where: { tenantId } }),
+    prisma.groups.count({ where: { tenantId, status: { in: ['OPEN', 'NEGOTIATING'] } } }),
+    prisma.group_members.count({
       where: {
-        group: { tenantId },
+        groups: { tenantId },
       },
     }),
-    prisma.transaction.aggregate({
+    prisma.transactions.aggregate({
       where: { tenantId, status: 'COMPLETED' },
       _sum: { amount: true },
     }),
-    prisma.group.findMany({
+    prisma.groups.findMany({
       where: { tenantId },
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: {
-        project: {
+        projects: {
           select: { name: true },
         },
         _count: {
-          select: { members: true },
+          select: { group_members: true },
         },
       },
     }),
@@ -136,7 +136,7 @@ export default async function PartnerDashboard() {
                     <tr key={group.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 text-sm text-gray-900">{group.name}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {group.project.name}
+                        {group.projects.name}
                       </td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
@@ -144,7 +144,7 @@ export default async function PartnerDashboard() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">
-                        {group._count.members}
+                        {group._count.group_members}
                       </td>
                       <td className="px-4 py-3">
                         <a

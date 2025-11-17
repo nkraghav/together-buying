@@ -27,16 +27,23 @@ export const authConfig: NextAuthConfig = {
           throw new Error('Missing credentials');
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-          include: { tenant: true },
+        const email = typeof credentials.email === 'string' ? credentials.email : '';
+        const password = typeof credentials.password === 'string' ? credentials.password : '';
+
+        if (!email || !password) {
+          throw new Error('Invalid credentials format');
+        }
+
+        const user = await prisma.users.findUnique({
+          where: { email },
+          include: { tenants: true },
         });
 
         if (!user || !user.password) {
           throw new Error('Invalid credentials');
         }
 
-        const isPasswordValid = await compare(credentials.password, user.password);
+        const isPasswordValid = await compare(password, user.password);
 
         if (!isPasswordValid) {
           throw new Error('Invalid credentials');
@@ -84,7 +91,7 @@ export const authConfig: NextAuthConfig = {
 
       // For OAuth sign-ins, fetch user data from database
       if (account && account.provider !== 'credentials') {
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = await prisma.users.findUnique({
           where: { email: token.email! },
           select: { id: true, role: true, tenantId: true },
         });
@@ -115,28 +122,32 @@ export const authConfig: NextAuthConfig = {
       try {
         // For OAuth providers, ensure user has a tenant
         if (account?.provider !== 'credentials') {
-          const existingUser = await prisma.user.findUnique({
+          const existingUser = await prisma.users.findUnique({
             where: { email: user.email! },
           });
 
           if (!existingUser) {
             // Create default tenant for new OAuth users
-            const tenant = await prisma.tenant.create({
+            const tenant = await prisma.tenants.create({
               data: {
+                id: crypto.randomUUID(),
                 name: `${user.name}'s Organization`,
                 slug: `${user.email?.split('@')[0]}-${Date.now()}`,
                 plan: 'free',
+                updatedAt: new Date(),
               },
             });
 
-            await prisma.user.create({
+            await prisma.users.create({
               data: {
+                id: crypto.randomUUID(),
                 email: user.email!,
                 name: user.name,
                 image: user.image,
                 tenantId: tenant.id,
                 role: UserRole.ORGANIZER,
                 emailVerified: new Date(),
+                updatedAt: new Date(),
               },
             });
           }

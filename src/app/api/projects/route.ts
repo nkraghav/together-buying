@@ -27,18 +27,18 @@ export async function GET(request: NextRequest) {
     }
 
     const [projects, total] = await Promise.all([
-      prisma.project.findMany({
+      prisma.projects.findMany({
         where,
         take: limit,
         skip: (page - 1) * limit,
         orderBy: { createdAt: 'desc' },
         include: {
           _count: {
-            select: { groups: true, inventoryUnits: true },
+            select: { groups: true, inventory_units: true },
           },
         },
       }),
-      prisma.project.count({ where }),
+      prisma.projects.count({ where }),
     ]);
 
     return NextResponse.json({
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
-    const project = await prisma.project.create({
+    const project = await prisma.projects.create({
       data: {
         ...data,
         tenantId: session.user.tenantId,

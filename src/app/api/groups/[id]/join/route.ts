@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { CommitmentStatus } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 export async function POST(
   request: NextRequest,
@@ -17,7 +18,7 @@ export async function POST(
     const { id: groupId } = await params;
 
     // Check if group exists and is accepting members
-    const group = await prisma.group.findUnique({
+    const group = await prisma.groups.findUnique({
       where: { id: groupId },
     });
 
@@ -33,7 +34,7 @@ export async function POST(
     }
 
     // Check if user is already a member
-    const existingMember = await prisma.groupMember.findUnique({
+    const existingMember = await prisma.group_members.findUnique({
       where: {
         groupId_userId: {
           groupId,
@@ -50,16 +51,18 @@ export async function POST(
     }
 
     // Create group membership
-    const member = await prisma.groupMember.create({
+    const member = await prisma.group_members.create({
       data: {
+        id: randomUUID(),
         groupId,
         userId: session.user.id,
         commitmentStatus: CommitmentStatus.INTERESTED,
+        updatedAt: new Date(),
       },
     });
 
     // Update group member count
-    await prisma.group.update({
+    await prisma.groups.update({
       where: { id: groupId },
       data: {
         currentBuyersCount: { increment: 1 },
@@ -67,8 +70,9 @@ export async function POST(
     });
 
     // Create milestone
-    await prisma.groupMilestone.create({
+    await prisma.group_milestones.create({
       data: {
+        id: randomUUID(),
         groupId,
         title: 'New Member Joined',
         description: `${session.user.name || 'A buyer'} joined the group`,
@@ -77,8 +81,9 @@ export async function POST(
     });
 
     // Log activity
-    await prisma.activityLog.create({
+    await prisma.activity_logs.create({
       data: {
+        id: randomUUID(),
         tenantId: session.user.tenantId,
         userId: session.user.id,
         action: 'GROUP_JOIN',

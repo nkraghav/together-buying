@@ -1,15 +1,28 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Group, Project } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
+
+type GroupWithProject = Prisma.groupsGetPayload<{
+  include: {
+    projects: {
+      select: {
+        name: true;
+        slug: true;
+        city: true;
+        location: true;
+        images: true;
+        developer: true;
+      };
+    };
+  };
+}>;
 
 interface GroupHeaderProps {
-  group: Group & {
-    project: Pick<Project, 'name' | 'slug' | 'city' | 'location' | 'images' | 'developer'>;
-  };
+  group: GroupWithProject;
 }
 
 export function GroupHeader({ group }: GroupHeaderProps) {
-  const images = group.project.images as string[] | null;
+  const images = group.projects.images as string[] | null;
   const firstImage = images?.[0] || '/placeholder-property.jpg';
 
   return (
@@ -17,7 +30,7 @@ export function GroupHeader({ group }: GroupHeaderProps) {
       <div className="relative h-64">
         <Image
           src={firstImage}
-          alt={group.project.name}
+          alt={group.projects.name}
           fill
           className="object-cover"
         />
@@ -30,10 +43,10 @@ export function GroupHeader({ group }: GroupHeaderProps) {
 
       <div className="p-6">
         <Link 
-          href={`/projects/${group.project.slug}`}
+          href={`/projects/${group.projects.slug}`}
           className="text-sm text-blue-600 hover:underline mb-2 block"
         >
-          ← Back to {group.project.name}
+          ← Back to {group.projects.name}
         </Link>
         
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{group.name}</h1>
@@ -41,11 +54,11 @@ export function GroupHeader({ group }: GroupHeaderProps) {
         <div className="flex flex-wrap gap-4 text-gray-600">
           <div className="flex items-center gap-1">
             <span>📍</span>
-            <span>{group.project.location}, {group.project.city}</span>
+            <span>{group.projects.location}, {group.projects.city}</span>
           </div>
           <div className="flex items-center gap-1">
             <span>🏗️</span>
-            <span>{group.project.developer}</span>
+            <span>{group.projects.developer}</span>
           </div>
         </div>
       </div>

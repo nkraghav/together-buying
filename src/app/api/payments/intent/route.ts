@@ -22,9 +22,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify group exists
-    const group = await prisma.group.findUnique({
+    const group = await prisma.groups.findUnique({
       where: { id: groupId },
-      include: { project: true },
+      include: { projects: true },
     });
 
     if (!group) {
@@ -39,13 +39,14 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         groupId,
         type,
-        projectName: group.project.name,
+        projectName: group.projects.name,
       }
     );
 
     // Create transaction record
-    const transaction = await prisma.transaction.create({
+    const transaction = await prisma.transactions.create({
       data: {
+        id: crypto.randomUUID(),
         tenantId: session.user.tenantId,
         userId: session.user.id,
         groupId,
@@ -54,7 +55,8 @@ export async function POST(request: NextRequest) {
         currency: 'INR',
         status: 'PENDING',
         stripePaymentIntentId: paymentIntent.id,
-        description: `${type} for ${group.project.name}`,
+        description: `${type} for ${group.projects.name}`,
+        updatedAt: new Date(),
       },
     });
 

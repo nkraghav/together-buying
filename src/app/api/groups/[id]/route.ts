@@ -8,20 +8,20 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const group = await prisma.group.findUnique({
+    const group = await prisma.groups.findUnique({
       where: { id },
       include: {
-        project: true,
-        createdBy: {
+        projects: true,
+        users: {
           select: {
             name: true,
             email: true,
             image: true,
           },
         },
-        members: {
+        group_members: {
           include: {
-            user: {
+            users: {
               select: {
                 id: true,
                 name: true,
@@ -35,7 +35,7 @@ export async function GET(
         offers: {
           orderBy: { createdAt: 'desc' },
         },
-        milestones: {
+        group_milestones: {
           orderBy: { createdAt: 'asc' },
         },
       },
@@ -67,7 +67,7 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const group = await prisma.group.findUnique({
+    const group = await prisma.groups.findUnique({
       where: { id },
     });
 
@@ -87,7 +87,7 @@ export async function PATCH(
 
     const data = await request.json();
 
-    const updatedGroup = await prisma.group.update({
+    const updatedGroup = await prisma.groups.update({
       where: { id },
       data,
     });

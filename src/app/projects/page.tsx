@@ -31,7 +31,7 @@ async function getProjects(searchParams: SearchParams) {
   }
 
   const [projects, total] = await Promise.all([
-    prisma.project.findMany({
+    prisma.projects.findMany({
       where,
       take: limit,
       skip: (page - 1) * limit,
@@ -42,14 +42,14 @@ async function getProjects(searchParams: SearchParams) {
         },
       },
     }),
-    prisma.project.count({ where }),
+    prisma.projects.count({ where }),
   ]);
 
   return { projects, total, page, limit };
 }
 
 async function getCities() {
-  const projects = await prisma.project.findMany({
+  const projects = await prisma.projects.findMany({
     where: { isActive: true },
     select: { city: true },
     distinct: ['city'],
@@ -86,7 +86,9 @@ export default async function ProjectsPage({
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <aside className="lg:col-span-1">
-            <ProjectFilters cities={cities} />
+            <Suspense fallback={<div className="bg-white p-6 rounded-lg shadow-sm">Loading filters...</div>}>
+              <ProjectFilters cities={cities} />
+            </Suspense>
           </aside>
 
           <main className="lg:col-span-3">

@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
+import { randomUUID } from 'crypto';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = headers().get('stripe-signature');
+  const headersList = await headers();
+  const signature = headersList.get('stripe-signature');
 
   if (!signature) {
     return NextResponse.json(
@@ -49,9 +51,9 @@ export async function POST(request: NextRequest) {
 }
 
 async function handlePaymentSuccess(paymentIntent: any) {
-  const transaction = await prisma.transaction.findUnique({
+  const transaction = await prisma.transactions.findUnique({
     where: { stripePaymentIntentId: paymentIntent.id },
-    include: { group: true },
+      include: { groups: true },
   });
 
   if (!transaction) {
@@ -60,7 +62,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
   }
 
   // Update transaction status
-  await prisma.transaction.update({
+  await prisma.transactions.update({
     where: { id: transaction.id },
     data: {
       status: 'COMPLETED',
@@ -70,7 +72,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
 
   // Update group member commitment status
   if (transaction.groupId) {
-    await prisma.groupMember.updateMany({
+    await prisma.group_members.updateMany({
       where: {
         groupId: transaction.groupId,
         userId: transaction.userId,
@@ -82,8 +84,9 @@ async function handlePaymentSuccess(paymentIntent: any) {
     });
 
     // Create milestone
-    await prisma.groupMilestone.create({
+    await prisma.group_milestones.create({
       data: {
+        id: randomUUID(),
         groupId: transaction.groupId,
         title: 'Payment Received',
         description: 'A member has completed their payment',
@@ -93,8 +96,9 @@ async function handlePaymentSuccess(paymentIntent: any) {
   }
 
   // Log activity
-  await prisma.activityLog.create({
+    await prisma.activity_logs.create({
     data: {
+      id: randomUUID(),
       tenantId: transaction.tenantId,
       userId: transaction.userId,
       action: 'PAYMENT_COMPLETED',
@@ -109,26 +113,26 @@ async function handlePaymentSuccess(paymentIntent: any) {
 }
 
 async function handlePaymentFailure(paymentIntent: any) {
-  const transaction = await prisma.transaction.findUnique({
+  const transaction = await prisma.transactions.findUnique({
     where: { stripePaymentIntentId: paymentIntent.id },
   });
 
   if (!transaction) return;
 
-  await prisma.transaction.update({
+  await prisma.transactions.update({
     where: { id: transaction.id },
     data: { status: 'FAILED' },
   });
 }
 
 async function handlePaymentCanceled(paymentIntent: any) {
-  const transaction = await prisma.transaction.findUnique({
+  const transaction = await prisma.transactions.findUnique({
     where: { stripePaymentIntentId: paymentIntent.id },
   });
 
   if (!transaction) return;
 
-  await prisma.transaction.update({
+  await prisma.transactions.update({
     where: { id: transaction.id },
     data: { status: 'FAILED' },
   });

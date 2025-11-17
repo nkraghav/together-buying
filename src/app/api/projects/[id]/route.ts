@@ -8,17 +8,17 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const project = await prisma.project.findUnique({
+    const project = await prisma.projects.findUnique({
       where: { id },
       include: {
-        inventoryUnits: {
+        inventory_units: {
           where: { availability: 'AVAILABLE' },
           take: 10,
         },
         groups: {
           where: { isActive: true },
           include: {
-            _count: { select: { members: true } },
+            _count: { select: { group_members: true } },
           },
         },
       },
@@ -57,7 +57,7 @@ export async function PATCH(
     }
 
     const { id } = await params;
-    const project = await prisma.project.findUnique({
+    const project = await prisma.projects.findUnique({
       where: { id },
     });
 
@@ -75,7 +75,7 @@ export async function PATCH(
 
     const data = await request.json();
 
-    const updatedProject = await prisma.project.update({
+    const updatedProject = await prisma.projects.update({
       where: { id },
       data,
     });

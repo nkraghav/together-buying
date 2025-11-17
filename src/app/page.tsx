@@ -9,7 +9,7 @@ import { Footer } from '@/components/Footer';
 export const revalidate = 3600; // Revalidate every hour
 
 async function getFeaturedProjects() {
-  return await prisma.project.findMany({
+  return await prisma.projects.findMany({
     where: {
       isActive: true,
       featured: true,
@@ -26,9 +26,9 @@ async function getFeaturedProjects() {
 
 async function getStats() {
   const [projectCount, activeGroupsCount, totalSavings] = await Promise.all([
-    prisma.project.count({ where: { isActive: true } }),
-    prisma.group.count({ where: { status: { in: ['OPEN', 'NEGOTIATING'] } } }),
-    prisma.transaction.aggregate({
+    prisma.projects.count({ where: { isActive: true } }),
+    prisma.groups.count({ where: { status: { in: ['OPEN', 'NEGOTIATING'] } } }),
+    prisma.transactions.aggregate({
       where: { status: 'COMPLETED' },
       _sum: { amount: true },
     }),

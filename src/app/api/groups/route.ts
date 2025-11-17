@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { GroupStatus } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,10 +17,10 @@ export async function GET(request: NextRequest) {
     if (projectId) where.projectId = projectId;
     if (status) where.status = status;
 
-    const groups = await prisma.group.findMany({
+    const groups = await prisma.groups.findMany({
       where,
       include: {
-        project: {
+        projects: {
           select: {
             name: true,
             slug: true,
@@ -28,9 +29,9 @@ export async function GET(request: NextRequest) {
           },
         },
         _count: {
-          select: { members: true },
+          select: { group_members: true },
         },
-        createdBy: {
+        users: {
           select: {
             name: true,
             email: true,
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     const data = await request.json();
 
-    const group = await prisma.group.create({
+    const group = await prisma.groups.create({
       data: {
         ...data,
         tenantId: session.user.tenantId,
@@ -76,8 +77,9 @@ export async function POST(request: NextRequest) {
     });
 
     // Create initial milestone
-    await prisma.groupMilestone.create({
+    await prisma.group_milestones.create({
       data: {
+        id: randomUUID(),
         groupId: group.id,
         title: 'Group Created',
         description: `${session.user.name || 'Organizer'} created this group`,
