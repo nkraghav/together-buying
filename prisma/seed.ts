@@ -7,7 +7,7 @@ async function main() {
   console.log('🌱 Starting seed...');
 
   // Create Tenants
-  const tenant1 = await prisma.tenant.upsert({
+  const tenant1 = await prisma.tenants.upsert({
     where: { slug: 'realestate-marketplace' },
     update: {},
     create: {
@@ -22,7 +22,7 @@ async function main() {
     },
   });
 
-  const tenant2 = await prisma.tenant.upsert({
+  const tenant2 = await prisma.tenants.upsert({
     where: { slug: 'property-partners' },
     update: {},
     create: {
