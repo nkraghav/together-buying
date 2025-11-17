@@ -361,7 +361,7 @@ async function main() {
   console.log('✅ Groups created');
 
   // Create Group Members
-  await prisma.groupMember.createMany({
+  await prisma.group_members.createMany({
     data: [
       { id: randomUUID(), groupId: group1.id, userId: buyer1.id, commitmentStatus: 'COMMITTED', updatedAt: new Date() },
       { id: randomUUID(), groupId: group1.id, userId: buyer2.id, commitmentStatus: 'INTERESTED', updatedAt: new Date() },
@@ -398,7 +398,7 @@ async function main() {
   console.log('✅ Offers created');
 
   // Create Group Milestones
-  await prisma.groupMilestone.createMany({
+  await prisma.group_milestones.createMany({
     data: [
       {
         id: randomUUID(),
