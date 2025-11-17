@@ -68,7 +68,9 @@ Prepare all required environment variables (see `ENV.md` for details):
 
 3. **Configure project:**
    - Framework Preset: **Next.js**
-   - Build Command: `npx prisma generate --schema=prisma/schema.prisma && next build`
+   - Build Command: `prisma generate && next build`
+   <!-- - Build Command: `npx prisma generate && next build` -->
+   <!-- - Build Command: `npx prisma generate --schema=prisma/schema.prisma && next build` -->
    - Output Directory: `.next`
    - Install Command: `npm install`
 
