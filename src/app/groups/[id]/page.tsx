@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -70,7 +69,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function GroupPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   const group = await getGroup(params.id);
 
   const isMember = session?.user?.id 
