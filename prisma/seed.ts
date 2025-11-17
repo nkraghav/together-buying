@@ -272,15 +272,15 @@ async function main() {
   await prisma.inventory_units.createMany({
     data: [
       // Skyline Towers units
-      { projectId: project1.id, unitType: '2BHK', floor: 15, carpetArea: 1200, builtUpArea: 1600, price: 15000000, availability: 'AVAILABLE' },
-      { projectId: project1.id, unitType: '3BHK', floor: 20, carpetArea: 1800, builtUpArea: 2400, price: 25000000, availability: 'AVAILABLE' },
-      { projectId: project1.id, unitType: '4BHK', floor: 35, carpetArea: 2800, builtUpArea: 3500, price: 35000000, availability: 'AVAILABLE' },
+      { id: randomUUID(), projectId: project1.id, unitType: '2BHK', floor: 15, carpetArea: 1200, builtUpArea: 1600, price: 15000000, availability: 'AVAILABLE', updatedAt: new Date() },
+      { id: randomUUID(), projectId: project1.id, unitType: '3BHK', floor: 20, carpetArea: 1800, builtUpArea: 2400, price: 25000000, availability: 'AVAILABLE', updatedAt: new Date() },
+      { id: randomUUID(), projectId: project1.id, unitType: '4BHK', floor: 35, carpetArea: 2800, builtUpArea: 3500, price: 35000000, availability: 'AVAILABLE', updatedAt: new Date() },
       // Green Valley units
-      { projectId: project2.id, unitType: '3BHK Villa', carpetArea: 2200, builtUpArea: 2800, price: 10000000, availability: 'AVAILABLE' },
-      { projectId: project2.id, unitType: '4BHK Villa', carpetArea: 3200, builtUpArea: 4000, price: 15000000, availability: 'AVAILABLE' },
+      { id: randomUUID(), projectId: project2.id, unitType: '3BHK Villa', carpetArea: 2200, builtUpArea: 2800, price: 10000000, availability: 'AVAILABLE', updatedAt: new Date() },
+      { id: randomUUID(), projectId: project2.id, unitType: '4BHK Villa', carpetArea: 3200, builtUpArea: 4000, price: 15000000, availability: 'AVAILABLE', updatedAt: new Date() },
       // Urban Edge units
-      { projectId: project3.id, unitType: '1BHK', floor: 5, carpetArea: 650, builtUpArea: 850, price: 5500000, availability: 'AVAILABLE' },
-      { projectId: project3.id, unitType: '2BHK', floor: 10, carpetArea: 1050, builtUpArea: 1350, price: 7500000, availability: 'AVAILABLE' },
+      { id: randomUUID(), projectId: project3.id, unitType: '1BHK', floor: 5, carpetArea: 650, builtUpArea: 850, price: 5500000, availability: 'AVAILABLE', updatedAt: new Date() },
+      { id: randomUUID(), projectId: project3.id, unitType: '2BHK', floor: 10, carpetArea: 1050, builtUpArea: 1350, price: 7500000, availability: 'AVAILABLE', updatedAt: new Date() },
     ],
   });
 
@@ -363,10 +363,10 @@ async function main() {
   // Create Group Members
   await prisma.groupMember.createMany({
     data: [
-      { groupId: group1.id, userId: buyer1.id, commitmentStatus: 'COMMITTED' },
-      { groupId: group1.id, userId: buyer2.id, commitmentStatus: 'INTERESTED' },
-      { groupId: group2.id, userId: buyer1.id, commitmentStatus: 'PAID' },
-      { groupId: group3.id, userId: buyer2.id, commitmentStatus: 'INTERESTED' },
+      { id: randomUUID(), groupId: group1.id, userId: buyer1.id, commitmentStatus: 'COMMITTED', updatedAt: new Date() },
+      { id: randomUUID(), groupId: group1.id, userId: buyer2.id, commitmentStatus: 'INTERESTED', updatedAt: new Date() },
+      { id: randomUUID(), groupId: group2.id, userId: buyer1.id, commitmentStatus: 'PAID', updatedAt: new Date() },
+      { id: randomUUID(), groupId: group3.id, userId: buyer2.id, commitmentStatus: 'INTERESTED', updatedAt: new Date() },
     ],
   });
 
@@ -376,6 +376,7 @@ async function main() {
   await prisma.offers.createMany({
     data: [
       {
+        id: randomUUID(),
         groupId: group2.id,
         offerType: 'INITIAL',
         discountPercent: 3.0,
@@ -383,6 +384,7 @@ async function main() {
         notes: 'Initial developer offer',
       },
       {
+        id: randomUUID(),
         groupId: group2.id,
         offerType: 'COUNTER',
         discountPercent: 5.5,
@@ -399,24 +401,28 @@ async function main() {
   await prisma.groupMilestone.createMany({
     data: [
       {
+        id: randomUUID(),
         groupId: group1.id,
         title: 'Group Created',
         description: 'Skyline Early Birds group has been created',
         type: 'GROUP_CREATED',
       },
       {
+        id: randomUUID(),
         groupId: group2.id,
         title: 'Target Reached',
         description: 'Group reached minimum buyer requirement',
         type: 'TARGET_REACHED',
       },
       {
+        id: randomUUID(),
         groupId: group2.id,
         title: 'Negotiation Started',
         description: 'Started negotiation with developer',
         type: 'NEGOTIATION_STARTED',
       },
       {
+        id: randomUUID(),
         groupId: group2.id,
         title: 'Offer Received',
         description: 'Developer offered 5.5% discount',
@@ -432,28 +438,36 @@ async function main() {
     await prisma.faqs.createMany({
       data: [
         {
+          id: randomUUID(),
           question: 'How does group buying work?',
           answer: 'Group buying allows multiple buyers to come together and negotiate better prices with developers. When a group reaches the target number of buyers, we negotiate on behalf of the group to secure bulk discounts.',
           category: 'General',
           order: 1,
+          updatedAt: new Date(),
         },
         {
+          id: randomUUID(),
           question: 'Is my payment secure?',
           answer: 'Yes, all payments are processed through Stripe and held in escrow until the deal is finalized. If the deal falls through, you receive a full refund.',
           category: 'Payments',
           order: 2,
+          updatedAt: new Date(),
         },
         {
+          id: randomUUID(),
           question: 'Can I leave a group after joining?',
           answer: 'Yes, you can leave a group before making any payment commitment. Once you make a payment, withdrawal is subject to the group terms and refund policy.',
           category: 'Groups',
           order: 3,
+          updatedAt: new Date(),
         },
         {
+          id: randomUUID(),
           question: 'What documents do I need for KYC?',
           answer: 'You need a valid government ID (Aadhaar, PAN card), proof of address, and bank statements for KYC verification.',
           category: 'Verification',
           order: 4,
+          updatedAt: new Date(),
         },
       ],
     });
@@ -466,6 +480,7 @@ async function main() {
   try {
     await prisma.case_studies.create({
       data: {
+        id: randomUUID(),
         tenantId: tenant1.id,
         title: 'Mumbai Buyers Save ₹50 Lakhs Through Collective Bargaining',
         slug: 'mumbai-buyers-save-50-lakhs',
@@ -477,6 +492,7 @@ async function main() {
         discountPercent: 7.5,
         isPublished: true,
         publishedAt: new Date(),
+        updatedAt: new Date(),
       },
     });
     console.log('✅ Case study created');
@@ -488,6 +504,7 @@ async function main() {
   try {
     await prisma.articles.create({
       data: {
+        id: randomUUID(),
         tenantId: tenant1.id,
         title: '10 Tips for First-Time Home Buyers in India',
         slug: '10-tips-first-time-home-buyers-india',
@@ -497,6 +514,7 @@ async function main() {
         tags: ['home-buying', 'tips', 'first-time-buyers'],
         isPublished: true,
         publishedAt: new Date(),
+        updatedAt: new Date(),
       },
     });
     console.log('✅ Article created');
