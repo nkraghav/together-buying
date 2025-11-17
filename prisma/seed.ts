@@ -47,7 +47,7 @@ async function main() {
   // Create Users
   const hashedPassword = await hash('password123', 10);
 
-  const admin1 = await prisma.user.upsert({
+  const admin1 = await prisma.users.upsert({
     where: { email: 'admin@realestate-marketplace.com' },
     update: {},
     create: {
@@ -61,7 +61,7 @@ async function main() {
     },
   });
 
-  const organizer1 = await prisma.user.upsert({
+  const organizer1 = await prisma.users.upsert({
     where: { email: 'organizer@realestate-marketplace.com' },
     update: {},
     create: {
@@ -75,7 +75,7 @@ async function main() {
     },
   });
 
-  const buyer1 = await prisma.user.upsert({
+  const buyer1 = await prisma.users.upsert({
     where: { email: 'buyer1@example.com' },
     update: {},
     create: {
@@ -89,7 +89,7 @@ async function main() {
     },
   });
 
-  const buyer2 = await prisma.user.upsert({
+  const buyer2 = await prisma.users.upsert({
     where: { email: 'buyer2@example.com' },
     update: {},
     create: {
@@ -103,7 +103,7 @@ async function main() {
     },
   });
 
-  const admin2 = await prisma.user.upsert({
+  const admin2 = await prisma.users.upsert({
     where: { email: 'admin@property-partners.com' },
     update: {},
     create: {
@@ -120,7 +120,7 @@ async function main() {
   console.log('✅ Users created');
 
   // Create Projects for Tenant 1
-  const project1 = await prisma.project.create({
+  const project1 = await prisma.projects.create({
     data: {
       tenantId: tenant1.id,
       name: 'Skyline Towers',
@@ -152,7 +152,7 @@ async function main() {
     },
   });
 
-  const project2 = await prisma.project.create({
+  const project2 = await prisma.projects.create({
     data: {
       tenantId: tenant1.id,
       name: 'Green Valley Villas',
@@ -184,7 +184,7 @@ async function main() {
     },
   });
 
-  const project3 = await prisma.project.create({
+  const project3 = await prisma.projects.create({
     data: {
       tenantId: tenant1.id,
       name: 'Urban Edge Apartments',
@@ -216,7 +216,7 @@ async function main() {
     },
   });
 
-  const project4 = await prisma.project.create({
+  const project4 = await prisma.projects.create({
     data: {
       tenantId: tenant2.id,
       name: 'Seaside Residency',
@@ -269,7 +269,7 @@ async function main() {
   console.log('✅ Inventory units created');
 
   // Create Groups
-  const group1 = await prisma.group.create({
+  const group1 = await prisma.groups.create({
     data: {
       tenantId: tenant1.id,
       projectId: project1.id,
@@ -285,7 +285,7 @@ async function main() {
     },
   });
 
-  const group2 = await prisma.group.create({
+  const group2 = await prisma.groups.create({
     data: {
       tenantId: tenant1.id,
       projectId: project2.id,
@@ -302,7 +302,7 @@ async function main() {
     },
   });
 
-  const group3 = await prisma.group.create({
+  const group3 = await prisma.groups.create({
     data: {
       tenantId: tenant1.id,
       projectId: project3.id,
@@ -317,7 +317,7 @@ async function main() {
     },
   });
 
-  const group4 = await prisma.group.create({
+  const group4 = await prisma.groups.create({
     data: {
       tenantId: tenant2.id,
       projectId: project4.id,
@@ -403,7 +403,7 @@ async function main() {
 
   // Create FAQs (optional content)
   try {
-    await prisma.fAQ.createMany({
+    await prisma.faqs.createMany({
       data: [
         {
           question: 'How does group buying work?',
@@ -460,7 +460,7 @@ async function main() {
 
   // Create Article
   try {
-    await prisma.article.create({
+    await prisma.articles.create({
       data: {
         tenantId: tenant1.id,
         title: '10 Tips for First-Time Home Buyers in India',
